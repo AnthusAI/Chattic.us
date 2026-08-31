@@ -37,9 +37,7 @@ def when_complete_without_evidence(context: object, bot_name: str) -> None:
 
 @when('bot "{bot_name}" completes the task with evidence "{evidence}"')
 def when_complete_with_evidence(context: object, bot_name: str, evidence: str) -> None:
-    context.last_task = context.task_driver.complete_task(
-        evidence, bot_name=bot_name
-    )
+    context.last_task = context.task_driver.complete_task(evidence, bot_name=bot_name)
 
 
 @when('bot "{bot_name}" closes the task with reason "{reason}"')
