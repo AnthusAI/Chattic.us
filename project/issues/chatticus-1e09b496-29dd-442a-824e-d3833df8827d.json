@@ -25,10 +25,16 @@
       "author": "rap@endymion.com",
       "text": "In progress: Composer 2.5 planning adversarial injection evals now that 53d744 sinks are on develop. Worktree to be named by worker (/tmp/chatticus-1e09b4-evals, branch cursor/adversarial-injection-evals-4a21). Not 35d86b.",
       "created_at": "2026-08-31T20:49:08.177628Z"
+    },
+    {
+      "id": "bda04be0-702e-49d2-9b86-9ea2f88c2f70",
+      "author": "rap@endymion.com",
+      "text": "Work started. Planner Composer 2.5 on worktree /tmp/chatticus-1e09b4-evals branch cursor/adversarial-injection-evals-4a21. Implementation not authorized until plan review. DoD is sink denial even if the model complies; prompt wording cannot close a bypass.",
+      "created_at": "2026-08-31T20:52:43.196564Z"
     }
   ],
   "created_at": "2026-08-30T15:54:57.524029Z",
-  "updated_at": "2026-08-31T20:49:08.177628Z",
+  "updated_at": "2026-08-31T20:52:43.196564Z",
   "closed_at": null,
   "custom": {}
 }
