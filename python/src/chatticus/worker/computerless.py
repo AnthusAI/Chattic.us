@@ -231,7 +231,11 @@ class ComputerlessWorker:
             outcome = client.complete(prompt)
         else:
             outcome = RenewingTextCompletionClient(client, renew).complete(prompt)
-        if not outcome.text.strip() and outcome.wait_gate is None and outcome.task_tool_call is None:
+        if (
+            not outcome.text.strip()
+            and outcome.wait_gate is None
+            and outcome.task_tool_call is None
+        ):
             raise RuntimeError("Model returned an empty completion.")
         if outcome.task_tool_call is not None:
             self._handle_task_tool_call(job, outcome)

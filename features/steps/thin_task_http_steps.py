@@ -74,7 +74,10 @@ def when_bot_receives_message(context: object, bot_name: str, message: str) -> N
 @when('bot "{bot_name}" runs one task-aware computerless worker turn')
 def when_bot_runs_task_aware_worker_turn(context: object, bot_name: str) -> None:
     from chatticus.http.client import HttpTurnClient
-    from chatticus.worker.computerless import ComputerlessWorker, TaskAwareFakeTextCompletionClient
+    from chatticus.worker.computerless import (
+        ComputerlessWorker,
+        TaskAwareFakeTextCompletionClient,
+    )
 
     bot = context.bots_by_name[bot_name]
     if not hasattr(context, "api_client"):
