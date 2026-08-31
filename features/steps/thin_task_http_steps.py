@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from behave import then, when
+
 from chatticus.http.app import create_app
 from chatticus.http.test_server import start_test_server
 from chatticus.thin_task import ThinTaskDriver
