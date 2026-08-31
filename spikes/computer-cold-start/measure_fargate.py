@@ -183,6 +183,20 @@ def _distribution(values: list[float]) -> dict[str, float]:
     }
 
 
+def _task_definition_label(task_definition: str) -> str:
+    """Return a revision label safe to commit (no account id in the ARN)."""
+    if "/" in task_definition:
+        return task_definition.rsplit("/", 1)[-1]
+    return task_definition
+
+
+def _image_label(image: str) -> str:
+    """Return repository:tag safe to commit (no ECR account host)."""
+    if "/" in image:
+        return image.rsplit("/", 1)[-1]
+    return image
+
+
 def main() -> int:
     cfn = boto3.client("cloudformation", region_name=REGION)
     ecs = boto3.client("ecs", region_name=REGION)
@@ -308,8 +322,8 @@ def main() -> int:
         "cluster": cluster,
         "service": service,
         "desired_count_at_start": desired_count,
-        "task_definition": task_definition,
-        "image": image,
+        "task_definition": _task_definition_label(task_definition),
+        "image": _image_label(image),
         "image_pushed_at": image_pushed_at,
         "image_digest": image_meta.get("imageDigest"),
         "log_group": log_group,
