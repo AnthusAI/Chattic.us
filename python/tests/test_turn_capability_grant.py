@@ -98,9 +98,7 @@ def test_http_grant_and_gated_read_use_durable_store() -> None:
         assert denied.status_code == 403
         assert "outside granted scopes" in denied.json()["detail"]
         api.close()
-        recycled_client = TestClient(
-            create_app(ControlPlane(messaging_store=store))
-        )
+        recycled_client = TestClient(create_app(ControlPlane(messaging_store=store)))
         allowed = recycled_client.post(
             f"/turns/{turn.turn_id}/workspace/read",
             json={
