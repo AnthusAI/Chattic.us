@@ -172,8 +172,6 @@ def test_docker_computer_image_boots_xvfb_and_probes_chromium() -> None:
         [
             "docker",
             "build",
-            "--platform",
-            "linux/arm64",
             "-f",
             str(DOCKERFILE),
             "-t",
