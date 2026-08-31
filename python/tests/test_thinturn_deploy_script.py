@@ -18,6 +18,26 @@ def test_development_thinturn_deploy_script_is_one_stack() -> None:
     assert "aws sts get-caller-identity" in text
 
 
+def test_development_web_deploy_script_is_bounded() -> None:
+    script = (
+        Path(__file__).resolve().parents[2]
+        / "infra"
+        / "deploy-chatticus-web-development.sh"
+    )
+    text = script.read_text()
+    assert "cdk deploy ChatticusWeb --require-approval never" in text
+    assert "ChatticusWeb" in text
+    assert "deploy --all" not in text
+    assert "ChatticusWebStaging" not in text
+    assert "ChatticusWebProduction" not in text
+    assert "ChatticusThinTurnStaging" not in text
+    assert "ChatticusThinTurnProduction" not in text
+    assert "cdk destroy" not in text
+    assert "cdk deploy ChatticusComputers" not in text
+    assert "cdk deploy ChatticusSnapshots" not in text
+    assert "aws sts get-caller-identity" in text
+
+
 def test_computer_worker_ecs_host_start_may_tag_tasks() -> None:
     source = (
         Path(__file__).resolve().parents[2] / "infra" / "lib" / "computer-host-start.ts"
