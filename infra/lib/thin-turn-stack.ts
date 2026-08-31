@@ -14,6 +14,10 @@ import * as fs from "fs";
 import * as path from "path";
 import { Construct } from "constructs";
 import {
+  computerHostStartEcsConfig,
+  wireComputerWorkerEcsHostStart,
+} from "./computer-host-start";
+import {
   ChatticusCloudEnvironment,
   thinTurnParameterPrefix,
 } from "./environments";
@@ -330,6 +334,14 @@ export class ThinTurnStack extends cdk.Stack {
         reportBatchItemFailures: true,
       }),
     );
+    const computerHostStart = computerHostStartEcsConfig(this, environmentName);
+    if (computerHostStart !== undefined) {
+      wireComputerWorkerEcsHostStart(
+        computerWorkerFunction,
+        cdk.Stack.of(this),
+        computerHostStart,
+      );
+    }
 
     const stripAcceptEncoding = new cloudfront.Function(this, "StripAcceptEncoding", {
       code: cloudfront.FunctionCode.fromInline(STRIP_ACCEPT_ENCODING_FUNCTION),
