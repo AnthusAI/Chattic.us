@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import pytest
+from computer_worker_helpers import CountingComputerActionExecutor
 
 from chatticus.browser_waiting_continuation_driver import (
     prepare_browser_waiting_continuation,
@@ -24,11 +25,7 @@ from chatticus.models import (
     TurnJob,
 )
 from chatticus.structured_handoff_driver import StructuredHandoffDriver
-from chatticus.worker.computer import (
-    ComputerWorker,
-    CountingComputerActionExecutor,
-    FakeComputerActionExecutor,
-)
+from chatticus.worker.computer import ComputerWorker, FakeComputerActionExecutor
 from chatticus.worker.computerless import (
     ComputerlessWorker,
     FakeTextCompletionClient,

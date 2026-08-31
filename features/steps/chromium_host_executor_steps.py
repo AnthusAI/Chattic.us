@@ -6,6 +6,7 @@ import threading
 from unittest.mock import patch
 
 from behave import given, then, when
+from computer_worker_helpers import CountingComputerActionExecutor
 
 from chatticus.browser_waiting_continuation_driver import (
     prepare_browser_waiting_continuation,
@@ -14,10 +15,7 @@ from chatticus.chromium_action_executor import ChromiumActionExecutor
 from chatticus.computer_host_boot import ComputerHostBootDriver
 from chatticus.http.client import HttpTurnClient
 from chatticus.models import TurnEventKind
-from chatticus.worker.computer import (
-    ComputerWorker,
-    CountingComputerActionExecutor,
-)
+from chatticus.worker.computer import ComputerWorker
 
 
 @given("the computer host has booted through the browser gate")
