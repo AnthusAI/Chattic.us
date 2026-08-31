@@ -24,10 +24,16 @@
       "author": "rap@endymion.com",
       "text": "Starting specify slice: executable capability, egress classes, untrusted vs privileged browser contexts, binding controls, injection containment Gherkin, and explicit v1 exclusions. Kernel only; not 53d744 live sinks, not 1e09b4 evals, not 35d86b.",
       "created_at": "2026-08-31T19:59:40.841639Z"
+    },
+    {
+      "id": "6b4a67c4-0292-4261-b7ed-aa518cd2a5e9",
+      "author": "rap@endymion.com",
+      "text": "Specify slice opened as PR https://github.com/AnthusAI/Chattic.us/pull/56 against develop.\n\nGherkin:\n- features/task_authority_grant.feature\n- features/browser_context_policy.feature\n- features/consequential_binding_control.feature\n- features/prompt_injection_containment.feature\n- features/v1_security_policy_exclusions.feature\n\nKernel stub: python/src/chatticus/capability_policy.py (not 53d744 sinks, not 1e09b4 evals, not 35d86b).\nStatus remains in_progress until the PR merges.",
+      "created_at": "2026-08-31T20:08:34.344839Z"
     }
   ],
   "created_at": "2026-08-30T15:54:57.331270Z",
-  "updated_at": "2026-08-31T19:59:40.841639Z",
+  "updated_at": "2026-08-31T20:08:34.344839Z",
   "closed_at": null,
   "custom": {}
 }
