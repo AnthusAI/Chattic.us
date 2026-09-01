@@ -46,6 +46,15 @@ export type Task = {
   updated_by_bot_id: string | null;
 };
 
+const invokeKey = process.env.NEXT_PUBLIC_CHATTICUS_INVOKE_KEY;
+async function authFetch(input: RequestInfo | URL, init?: RequestInit): Promise<Response> {
+  const headers = new Headers(init?.headers);
+  if (invokeKey) {
+    headers.set("X-Chatticus-Invoke-Key", invokeKey);
+  }
+  return fetch(input, { ...init, headers });
+}
+
 async function readJson<T>(response: Response): Promise<T> {
   if (!response.ok) {
     const detail = await response.text();
@@ -55,12 +64,12 @@ async function readJson<T>(response: Response): Promise<T> {
 }
 
 export async function fetchHealth(): Promise<HealthResponse> {
-  const response = await fetch(`${apiBase}/health`);
+  const response = await authFetch(`${apiBase}/health`);
   return readJson<HealthResponse>(response);
 }
 
 export async function listBots(userId: string): Promise<Bot[]> {
-  const response = await fetch(
+  const response = await authFetch(
     `${apiBase}${orgApiPath(tenantId, `/users/${encodeURIComponent(userId)}/bots`)}`,
   );
   const body = await readJson<{ bots: Bot[] }>(response);
@@ -71,7 +80,7 @@ export async function createChannel(
   userId: string,
   botIds: string[],
 ): Promise<Channel> {
-  const response = await fetch(`${apiBase}${orgApiPath(tenantId, "/channels")}`, {
+  const response = await authFetch(`${apiBase}${orgApiPath(tenantId, "/channels")}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +96,7 @@ export async function postMessage(
   body: string,
   addressedToBotId: string,
 ): Promise<PostMessageResponse> {
-  const response = await fetch(
+  const response = await authFetch(
     `${apiBase}${orgApiPath(tenantId, `/channels/${encodeURIComponent(channelId)}/messages`)}`,
     {
       method: "POST",
@@ -106,7 +115,7 @@ export async function postMessage(
 }
 
 export async function listTasks(userId: string): Promise<Task[]> {
-  const response = await fetch(
+  const response = await authFetch(
     `${apiBase}${orgApiPath(tenantId, `/users/${encodeURIComponent(userId)}/tasks`)}`,
   );
   const body = await readJson<{ tasks: Task[] }>(response);
@@ -114,7 +123,7 @@ export async function listTasks(userId: string): Promise<Task[]> {
 }
 
 export async function getTask(taskId: string): Promise<Task> {
-  const response = await fetch(
+  const response = await authFetch(
     `${apiBase}${orgApiPath(tenantId, `/tasks/${encodeURIComponent(taskId)}`)}`,
   );
   return readJson<Task>(response);

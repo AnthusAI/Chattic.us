@@ -21,6 +21,10 @@ export function openTurnStream(
   const headers: Record<string, string> = {
     Accept: "text/event-stream",
   };
+  const invokeKey = process.env.NEXT_PUBLIC_CHATTICUS_INVOKE_KEY;
+  if (invokeKey) {
+    headers["X-Chatticus-Invoke-Key"] = invokeKey;
+  }
   if (lastEventId && lastEventId > 0) {
     headers["Last-Event-ID"] = String(lastEventId);
   }
