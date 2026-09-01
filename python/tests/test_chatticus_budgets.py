@@ -18,7 +18,11 @@ def test_budgets_deploy_context_omits_flags_when_unset() -> None:
     env.pop("CHATTICUS_BUDGETS_MONTHLY_LIMIT_USD", None)
     env.pop("CHATTICUS_BUDGETS_NOTIFICATION_EMAIL", None)
     result = subprocess.run(
-        ["sh", "-c", f'. "{BUDGETS_CONTEXT_SCRIPT}"; printf "%s" "$BUDGETS_CDK_CONTEXT"'],
+        [
+            "sh",
+            "-c",
+            f'. "{BUDGETS_CONTEXT_SCRIPT}"; printf "%s" "$BUDGETS_CDK_CONTEXT"',
+        ],
         cwd=INFRA,
         env=env,
         capture_output=True,
@@ -51,7 +55,11 @@ def test_budgets_deploy_context_emits_cdk_flags_when_set() -> None:
     env["CHATTICUS_BUDGETS_MONTHLY_LIMIT_USD"] = "75"
     env["CHATTICUS_BUDGETS_NOTIFICATION_EMAIL"] = "owner@example.com"
     result = subprocess.run(
-        ["sh", "-c", f'. "{BUDGETS_CONTEXT_SCRIPT}"; printf "%s" "$BUDGETS_CDK_CONTEXT"'],
+        [
+            "sh",
+            "-c",
+            f'. "{BUDGETS_CONTEXT_SCRIPT}"; printf "%s" "$BUDGETS_CDK_CONTEXT"',
+        ],
         cwd=INFRA,
         env=env,
         capture_output=True,
