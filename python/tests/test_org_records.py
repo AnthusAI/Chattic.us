@@ -17,6 +17,7 @@ from chatticus.models import (
     InvitationEmailMismatchError,
     InvitationStatus,
     MemberRole,
+    NotOrganizationOwnerError,
     OrganizationNotEnabledError,
     OrganizationStatus,
 )
@@ -141,6 +142,61 @@ def test_gmail_dot_near_miss_invitation_does_not_match() -> None:
     acceptor = kernel.sign_in("foobar@gmail.com", now=NOW)
     with pytest.raises(InvitationEmailMismatchError):
         kernel.accept_invitation(invitation.invitation_id, acceptor, now=NOW)
+
+
+def test_suspend_organization_flips_status() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    owner = kernel.sign_in("ryan@example.com", now=NOW)
+    org = kernel.create_organization(owner, "Anthus Labs", now=NOW)
+    kernel.enable_organization(org.tenant_id)
+    suspended = kernel.suspend_organization(org.tenant_id)
+    assert suspended.status == OrganizationStatus.SUSPENDED
+
+
+def test_accept_on_suspended_org_raises() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    owner = kernel.sign_in("ryan@example.com", now=NOW)
+    org = kernel.create_organization(owner, "Anthus Labs", now=NOW)
+    kernel.enable_organization(org.tenant_id)
+    invitation = kernel.invite_by_email(
+        org.tenant_id, owner.user_id, "sam@example.com", now=NOW
+    )
+    kernel.suspend_organization(org.tenant_id)
+    acceptor = kernel.sign_in("sam@example.com", now=NOW)
+    with pytest.raises(OrganizationNotEnabledError):
+        kernel.accept_invitation(invitation.invitation_id, acceptor, now=NOW)
+
+
+def test_owner_can_set_member_role() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    owner = kernel.sign_in("ryan@example.com", now=NOW)
+    org = kernel.create_organization(owner, "Anthus Labs", now=NOW)
+    kernel.enable_organization(org.tenant_id)
+    invitation = kernel.invite_by_email(
+        org.tenant_id, owner.user_id, "sam@example.com", now=NOW
+    )
+    acceptor = kernel.sign_in("sam@example.com", now=NOW)
+    kernel.accept_invitation(invitation.invitation_id, acceptor, now=NOW)
+    updated = kernel.set_member_role(
+        org.tenant_id, owner.user_id, acceptor.user_id, MemberRole.OWNER
+    )
+    assert updated.role == MemberRole.OWNER
+
+
+def test_member_cannot_set_role() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    owner = kernel.sign_in("ryan@example.com", now=NOW)
+    org = kernel.create_organization(owner, "Anthus Labs", now=NOW)
+    kernel.enable_organization(org.tenant_id)
+    invitation = kernel.invite_by_email(
+        org.tenant_id, owner.user_id, "sam@example.com", now=NOW
+    )
+    acceptor = kernel.sign_in("sam@example.com", now=NOW)
+    kernel.accept_invitation(invitation.invitation_id, acceptor, now=NOW)
+    with pytest.raises(NotOrganizationOwnerError):
+        kernel.set_member_role(
+            org.tenant_id, acceptor.user_id, acceptor.user_id, MemberRole.OWNER
+        )
 
 
 @mock_aws

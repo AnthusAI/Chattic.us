@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 
 import pytest
 
@@ -22,6 +22,27 @@ from chatticus.models import (
     WorkerRegistration,
     WorkerTenantMismatchError,
 )
+
+NOW = datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC)
+
+
+def test_enable_organization_does_not_provision_computer() -> None:
+    plane = ControlPlane()
+    owner = plane.sign_in("ryan@example.com", now=NOW)
+    org = plane.create_organization(owner, "Anthus Labs", now=NOW)
+    enabled = plane.enable_organization(org.tenant_id)
+    assert enabled.status.value == "enabled"
+    assert plane._messaging_store.get_computer(org.tenant_id, owner.user_id) is None
+
+
+def test_control_plane_org_methods_share_messaging_store() -> None:
+    plane = ControlPlane()
+    owner = plane.sign_in("ryan@example.com", now=NOW)
+    org = plane.create_organization(owner, "Anthus Labs", now=NOW)
+    plane.enable_organization(org.tenant_id)
+    recycled = ControlPlane(messaging_store=plane._messaging_store)
+    loaded = recycled.list_organizations_for_user(owner.user_id)
+    assert [item.tenant_id for item in loaded] == [org.tenant_id]
 
 
 def _worker(

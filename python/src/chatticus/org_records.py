@@ -89,6 +89,39 @@ class OrgRecordsKernel:
         self.store.put_organization(enabled)
         return enabled
 
+    def suspend_organization(self, tenant_id: str) -> Organization:
+        """Mark one organization suspended."""
+        organization = self.store.get_organization(tenant_id)
+        if organization is None:
+            raise OrganizationNotFoundError(f"Organization {tenant_id!r} is unknown.")
+        suspended = replace(organization, status=OrganizationStatus.SUSPENDED)
+        self.store.put_organization(suspended)
+        return suspended
+
+    def set_member_role(
+        self,
+        tenant_id: str,
+        actor_user_id: str,
+        member_user_id: str,
+        role: MemberRole,
+    ) -> Membership:
+        """Change one member's role; only an owner may call this."""
+        organization = self.store.get_organization(tenant_id)
+        if organization is None:
+            raise OrganizationNotFoundError(f"Organization {tenant_id!r} is unknown.")
+        actor = self.store.get_membership(tenant_id, actor_user_id)
+        if actor is None or actor.role != MemberRole.OWNER:
+            raise NotOrganizationOwnerError(
+                f"User {actor_user_id!r} is not an owner of {tenant_id!r}."
+            )
+        membership = self.store.get_membership(tenant_id, member_user_id)
+        if membership is None:
+            msg = f"User {member_user_id!r} is not a member of {tenant_id!r}."
+            raise KeyError(msg)
+        updated = replace(membership, role=role)
+        self.store.put_membership(updated)
+        return updated
+
     def invite_by_email(
         self,
         tenant_id: str,
