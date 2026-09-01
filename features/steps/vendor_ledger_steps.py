@@ -7,15 +7,7 @@ from decimal import Decimal
 from behave import given, then, when
 
 from chatticus.vendor_ledger import CompletionUsage
-from chatticus.vendor_prices import (
-    VendorPrice,
-    clear_vendor_prices,
-    register_vendor_price,
-)
-
-
-def before_scenario(context: object, scenario: object) -> None:
-    clear_vendor_prices()
+from chatticus.vendor_prices import VendorPrice, register_vendor_price
 
 
 @given(
