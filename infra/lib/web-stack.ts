@@ -20,6 +20,7 @@ import {
   webParameterPrefix,
   WEB_SITE_DOMAINS,
 } from "./environments";
+import { CHATTICUS_LOG_RETENTION, LogGroupRetentionAspect } from "./log-retention";
 
 export interface WebStackProps extends cdk.StackProps {
   chatticusEnvironment: ChatticusCloudEnvironment;
@@ -46,6 +47,7 @@ export class WebStack extends cdk.Stack {
     const thinTurnPrefix = thinTurnParameterPrefix(environmentName);
     const retainData = environmentName !== "development";
     cdk.Tags.of(this).add("chatticus:environment", environmentName);
+    cdk.Aspects.of(this).add(new LogGroupRetentionAspect(CHATTICUS_LOG_RETENTION));
 
     const invokeSecret = props.invokeSecret;
     const frontDoorFunctionUrl = props.frontDoorFunctionUrl;
