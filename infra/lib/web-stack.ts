@@ -24,7 +24,7 @@ import {
   CHATTICUS_LOG_RETENTION,
   CustomResourceProviderLogRetentionAspect,
 } from "./log-retention";
-import { webDockerBundleCommand, webLocalBundleCommand } from "./web-build-env";
+import { webDockerBundleCommand, webLocalBundleCommand, WEB_BUNDLE_DOCKER_IMAGE, WEB_LOCAL_BUNDLE_AWS_CLI_CHECK } from "./web-build-env";
 
 export interface WebStackProps extends cdk.StackProps {
   chatticusEnvironment: ChatticusCloudEnvironment;
@@ -139,16 +139,19 @@ export class WebStack extends cdk.Stack {
       : [
           s3deploy.Source.asset(webRoot, {
             bundling: {
-              image: cdk.DockerImage.fromRegistry("node:22-bookworm-slim"),
+              image: cdk.DockerImage.fromRegistry(WEB_BUNDLE_DOCKER_IMAGE),
               command: ["bash", "-c", webDockerBundleCommand(environmentName)],
               local: {
                 tryBundle(outputDir: string): boolean {
                   try {
-                    execSync(webLocalBundleCommand(environmentName), {
-                      cwd: webRoot,
-                      stdio: "inherit",
-                      shell: "/bin/bash",
-                    });
+                    execSync(
+                      `${WEB_LOCAL_BUNDLE_AWS_CLI_CHECK} && ${webLocalBundleCommand(environmentName)}`,
+                      {
+                        cwd: webRoot,
+                        stdio: "inherit",
+                        shell: "/bin/bash",
+                      },
+                    );
                     execSync(`cp -r ${webRoot}/out/. ${outputDir}/`, {
                       stdio: "inherit",
                     });

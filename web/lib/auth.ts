@@ -35,7 +35,6 @@ export function getUserManager(): UserManager {
       extraQueryParams: { identity_provider: "Google" },
       userStore: new WebStorageStateStore({ store: new InMemoryWebStorage() }),
       automaticSilentRenew: true,
-      useRefreshToken: true,
       accessTokenExpiringNotificationTimeInSeconds: 60,
     });
   }

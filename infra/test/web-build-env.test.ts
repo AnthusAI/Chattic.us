@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
 import {
+  WEB_BUNDLE_DOCKER_IMAGE,
+  WEB_LOCAL_BUNDLE_AWS_CLI_CHECK,
   webBuildEnvExports,
   webDockerBundleCommand,
   webLocalBundleCommand,
@@ -19,16 +21,18 @@ describe("webBuildEnvExports", () => {
 });
 
 describe("web bundle commands", () => {
-  it("uses aws cli during docker bundling", () => {
+  it("uses preinstalled aws cli in the docker image without apt-get", () => {
     const command = webDockerBundleCommand("development");
-    assert.match(command, /awscli/);
+    assert.doesNotMatch(command, /apt-get/);
     assert.match(command, /aws ssm get-parameter/);
     assert.match(command, /npm run build/);
+    assert.match(WEB_BUNDLE_DOCKER_IMAGE, /sam\/build-nodejs/);
   });
 
-  it("uses aws cli during local tryBundle", () => {
+  it("uses aws cli during local tryBundle when available", () => {
     const command = webLocalBundleCommand("staging");
     assert.match(command, /\/chatticus\/staging\/web\/cognito-user-pool-id/);
     assert.match(command, /npm run build/);
+    assert.match(WEB_LOCAL_BUNDLE_AWS_CLI_CHECK, /command -v aws/);
   });
 });

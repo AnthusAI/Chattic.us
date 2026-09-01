@@ -4,6 +4,10 @@ import {
   webParameterPrefix,
 } from "./environments";
 
+/** Docker image for web bundling when local tryBundle is unavailable. Includes Node + AWS CLI. */
+export const WEB_BUNDLE_DOCKER_IMAGE =
+  "public.ecr.aws/sam/build-nodejs22.x";
+
 /** Fetch public Cognito SSM parameters at bundle time (not CloudFormation tokens). */
 export function webBuildEnvExports(environmentName: ChatticusCloudEnvironment): string {
   const webPrefix = webParameterPrefix(environmentName);
@@ -25,8 +29,6 @@ export function webDockerBundleCommand(
 ): string {
   return [
     "cd /asset-input",
-    "apt-get update -qq",
-    "DEBIAN_FRONTEND=noninteractive apt-get install -y -qq awscli",
     webBuildEnvExports(environmentName),
     "npm ci",
     "npm run build",
@@ -41,3 +43,6 @@ export function webLocalBundleCommand(
     " && ",
   );
 }
+
+/** Shell guard: only attempt local bundling when AWS CLI is on PATH. */
+export const WEB_LOCAL_BUNDLE_AWS_CLI_CHECK = "command -v aws >/dev/null";
