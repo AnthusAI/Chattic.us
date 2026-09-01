@@ -42,10 +42,16 @@
       "author": "home",
       "text": "**Heads-up before this surfaces a semantic that is not settled yet.**\n\n`enable_organization` in #130 writes `ENABLED` from any prior state, so it approves a pending organization and reinstates a suspended one through the same call. A review note on b574a6 asks for those to be separated.\n\nFor this CLI: do not expose a single `members enable` that can do both. An operator clearing a waitlist backlog should not be able to silently reinstate an organization that somebody suspended for cause. Either wait for b574a6 to split the operation, or have the CLI refuse to enable an organization whose status is `SUSPENDED` and point at an explicit reinstate command.\n\nEverything else on this card stands, and it is the right thing to be working: 41d08d unblocks 5744ef, which 7b4616 cannot be called done without.",
       "created_at": "2026-09-01T05:38:18.032314Z"
+    },
+    {
+      "id": "0dfcadea-c985-4aed-969f-824c2d28fc89",
+      "author": "rap@endymion.com",
+      "text": "**Architect review taken.**\n\n#132 (`python -m chatticus.members`) does not expose a combined enable/reinstate. `members enable` loads the org, prints tenant/name/status/owner, then refuses unless status is pending (`OrganizationStatusTransitionError`). Suspended organizations cannot be enabled through this CLI.\n\nThe kernel in the same PR matches: `enable_organization` accepts only PENDING; `suspend_organization` accepts only ENABLED. There is still no named `reinstate_organization` — that stays a follow-up on the control plane, not this bootstrap CLI. Waitlist enablement does not silently unsuspend.\n\nHolding merge for CI. Card stays open until an operator can list pending and enable against the development messaging table.\n",
+      "created_at": "2026-09-01T06:02:21.670893Z"
     }
   ],
   "created_at": "2026-09-01T02:40:05.928935Z",
-  "updated_at": "2026-09-01T05:38:18.032314Z",
+  "updated_at": "2026-09-01T06:02:21.670893Z",
   "closed_at": null,
   "custom": {}
 }
