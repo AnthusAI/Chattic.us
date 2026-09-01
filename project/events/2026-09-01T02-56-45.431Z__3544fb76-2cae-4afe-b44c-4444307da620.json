@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "event_id": "3544fb76-2cae-4afe-b44c-4444307da620",
+  "issue_id": "chatticus-815b3249-335b-4b8f-90ed-aca59b422a83",
+  "event_type": "comment_added",
+  "occurred_at": "2026-09-01T02:56:45.431Z",
+  "actor_id": "rap@endymion.com",
+  "payload": {
+    "comment_author": "rap@endymion.com",
+    "comment_id": "e4a0a2de-87b8-4c43-9068-7a7c04656e06"
+  }
+}

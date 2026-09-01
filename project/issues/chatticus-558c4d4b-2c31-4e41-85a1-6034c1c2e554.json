@@ -18,10 +18,16 @@
       "author": "rap@endymion.com",
       "text": "Phase 01 of 7c310b. Planner worktree `/tmp/chatticus-558c4d-spend` branch `cursor/org-spend-alarm-4a21` off origin/develop. Plan only until authorized. No cdk deploy --all.",
       "created_at": "2026-09-01T02:52:14.058300Z"
+    },
+    {
+      "id": "a84dcfd3-39fa-4720-9ead-3cc8ff03abbd",
+      "author": "rap@endymion.com",
+      "text": "## Questions for architects\n\n1. What monthly (or daily) USD amount and which AWS account should the CDK budget watch? Account is implied by the existing stacks; I will not put account ids in git.\n2. Which email (or SNS subscription) is “the owner” for alarm mail?\n3. OpenAI project hard cap: confirm this stays a **console-only** action with a README sentence, no CDK.\n4. New stack vs bolt onto an existing one? Preference: a small named stack so we never `--all`.\n",
+      "created_at": "2026-09-01T02:56:45.406264Z"
     }
   ],
   "created_at": "2026-09-01T02:51:49.349541Z",
-  "updated_at": "2026-09-01T02:52:14.058300Z",
+  "updated_at": "2026-09-01T02:56:45.406264Z",
   "closed_at": null,
   "custom": {}
 }

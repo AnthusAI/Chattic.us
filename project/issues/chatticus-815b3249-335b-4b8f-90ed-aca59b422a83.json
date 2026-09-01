@@ -18,10 +18,16 @@
       "author": "rap@endymion.com",
       "text": "Human-owned. Agents will not put Google client secrets in git. One GCP project, three OAuth clients, redirects to Cognito auth-dev / auth-staging / auth.chattic.us. Secrets Manager by hand.",
       "created_at": "2026-09-01T02:52:14.138071Z"
+    },
+    {
+      "id": "e4a0a2de-87b8-4c43-9068-7a7c04656e06",
+      "author": "rap@endymion.com",
+      "text": "## Human / architect — Google OAuth (critical path)\n\nThis is not agent-implementable without you.\n\nPlease confirm or correct:\n\n- One Google Cloud project, **three** OAuth clients (dev / staging / prod).\n- Redirect URIs are Cognito auth domains, **not** hey/dev/staging app origins: `https://auth-dev.chattic.us/oauth2/idpresponse`, `https://auth-staging.chattic.us/oauth2/idpresponse`, `https://auth.chattic.us/oauth2/idpresponse` (single DNS label so `*.chattic.us` covers them).\n- Client secrets go to **Secrets Manager by hand**. Never git, never CDK plaintext, never an agent transcript.\n\nIf a GCP project and branding already exist, drop the project name (not secrets) here so Cognito work (0df6cb) can name the right ids later.\n",
+      "created_at": "2026-09-01T02:56:45.430994Z"
     }
   ],
   "created_at": "2026-09-01T02:51:49.383350Z",
-  "updated_at": "2026-09-01T02:52:14.138071Z",
+  "updated_at": "2026-09-01T02:56:45.430994Z",
   "closed_at": null,
   "custom": {}
 }

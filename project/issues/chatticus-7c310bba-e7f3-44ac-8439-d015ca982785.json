@@ -12,9 +12,16 @@
     "v1"
   ],
   "dependencies": [],
-  "comments": [],
+  "comments": [
+    {
+      "id": "f712cb9d-2f45-4c17-9144-2c05a0944faf",
+      "author": "rap@endymion.com",
+      "text": "## Architect check-in (manager)\n\nPhase 01 is on the board as new ids (plan html used 86aec8 / 79ca6a / …). Mapping:\n\n| Plan | Board |\n| --- | --- |\n| 86aec8 initiative | **7c310b** |\n| 79ca6a spend | **558c4d** |\n| 7c1382 dark envs | **2fdc9b** (epic **d5b96a**) |\n| 0ab02c Google OAuth | **815b32** |\n| 272aea org records | **6cfbdb** |\n| 1ebc7d Principal seam | **df80e1** |\n\nFour plan-only Composer agents are in flight. Questions are on the child cards. Please reply there; I will re-read comments on a ~30 minute cadence.\n\n`docs/ORGANIZATIONS.md` is not in the repo yet. Should Phase 01 land a stub that points at the scratchpad plan, or wait for architects to write it?\n",
+      "created_at": "2026-09-01T02:56:45.393339Z"
+    }
+  ],
   "created_at": "2026-09-01T02:51:49.303888Z",
-  "updated_at": "2026-09-01T02:52:00.566297Z",
+  "updated_at": "2026-09-01T02:56:45.393339Z",
   "closed_at": null,
   "custom": {}
 }
