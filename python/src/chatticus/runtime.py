@@ -57,7 +57,9 @@ def cognito_verifier_from_env() -> CognitoJwtVerifier | None:
     environment = os.environ.get("CHATTICUS_ENVIRONMENT", "local").strip() or "local"
     if environment in CLOUD_ENVIRONMENTS:
         try:
-            return CognitoJwtVerifier(resolve_cognito_config(parse_cloud_environment(environment)))
+            return CognitoJwtVerifier(
+                resolve_cognito_config(parse_cloud_environment(environment))
+            )
         except LookupError:
             return None
 
