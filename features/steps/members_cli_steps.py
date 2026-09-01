@@ -5,9 +5,9 @@ from __future__ import annotations
 import io
 
 from behave import then, when
+from organization_steps import _org_by_name, _plane
 
 from chatticus.members.__main__ import main as members_main
-from organization_steps import _org_by_name, _plane
 
 
 @when('the members CLI lists organizations with status "{status}"')
