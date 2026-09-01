@@ -179,8 +179,11 @@ aws ssm put-parameter \
 ```
 
 `npx cdk synth` and thin-turn deploy succeed without the parameter
-existing (import-only reference). Workers use the fake client until the
-parameter is present.
+existing (import-only reference). Deployed Lambdas always set
+`OPENAI_API_KEY_PARAMETER`, so a live turn that needs OpenAI completion
+raises SSM `ParameterNotFound` until the human seeds the SecureString
+above. The fake client is only used when that env var is unset (for
+example local dev without `.env`).
 
 Deploy **one named thin-turn stack** after seeding SSM for that
 environment, for example:
