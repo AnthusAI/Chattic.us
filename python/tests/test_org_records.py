@@ -14,6 +14,7 @@ from chatticus.messaging.store import (
     create_messaging_table,
 )
 from chatticus.models import (
+    InvitationEmailMismatchError,
     InvitationStatus,
     MemberRole,
     OrganizationNotEnabledError,
@@ -29,22 +30,29 @@ NOW = datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC)
     [
         ("Ryan@Example.COM", "ryan@example.com"),
         ("  sam@example.com  ", "sam@example.com"),
-        ("foo.bar@gmail.com", "foobar@gmail.com"),
-        ("foo.bar@googlemail.com", "foobar@googlemail.com"),
+        ("foo.bar@gmail.com", "foo.bar@gmail.com"),
+        ("foo.bar@googlemail.com", "foo.bar@googlemail.com"),
         ("foo.bar@example.com", "foo.bar@example.com"),
         ("foo+tag@gmail.com", "foo+tag@gmail.com"),
-        ("a.b.c+tag@Gmail.com", "abc+tag@gmail.com"),
+        ("a.b.c+tag@Gmail.com", "a.b.c+tag@gmail.com"),
     ],
 )
 def test_normalize_email(raw: str, expected: str) -> None:
     assert normalize_email(raw) == expected
 
 
-def test_gmail_variants_collide_for_identity() -> None:
+def test_gmail_dot_variants_do_not_collide_for_identity() -> None:
     kernel = OrgRecordsKernel(InMemoryMessagingStore())
     first = kernel.sign_in("foo.bar@gmail.com", now=NOW)
     second = kernel.sign_in("foobar@gmail.com", now=NOW)
-    assert first.user_id == second.user_id
+    assert first.user_id != second.user_id
+
+
+def test_plus_tag_variants_do_not_collide_for_identity() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    first = kernel.sign_in("foo@gmail.com", now=NOW)
+    second = kernel.sign_in("foo+tag@gmail.com", now=NOW)
+    assert first.user_id != second.user_id
 
 
 def test_non_gmail_dots_do_not_collide() -> None:
@@ -122,6 +130,19 @@ def test_invitation_email_match_uses_normalization() -> None:
     assert membership.user_id == acceptor.user_id
 
 
+def test_gmail_dot_near_miss_invitation_does_not_match() -> None:
+    kernel = OrgRecordsKernel(InMemoryMessagingStore())
+    owner = kernel.sign_in("ryan@example.com", now=NOW)
+    org = kernel.create_organization(owner, "Anthus Labs", now=NOW)
+    kernel.enable_organization(org.tenant_id)
+    invitation = kernel.invite_by_email(
+        org.tenant_id, owner.user_id, "foo.bar@gmail.com", now=NOW
+    )
+    acceptor = kernel.sign_in("foobar@gmail.com", now=NOW)
+    with pytest.raises(InvitationEmailMismatchError):
+        kernel.accept_invitation(invitation.invitation_id, acceptor, now=NOW)
+
+
 @mock_aws
 def test_org_records_persist_in_dynamo_store() -> None:
     client = boto3.client("dynamodb", region_name="us-east-1")
@@ -167,7 +188,7 @@ def test_identity_dual_write_creates_email_lookup() -> None:
     response = client.get_item(
         TableName=table_name,
         Key={
-            "pk": {"S": "identity_lookup#foobar@gmail.com"},
+            "pk": {"S": "identity_lookup#foo.bar@gmail.com"},
             "sk": {"S": "meta"},
         },
     )

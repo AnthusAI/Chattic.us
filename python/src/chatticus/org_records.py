@@ -25,21 +25,15 @@ from chatticus.models import (
     OrganizationStatus,
 )
 
-_GMAIL_DOMAINS = frozenset({"gmail.com", "googlemail.com"})
-
 
 def normalize_email(email: str) -> str:
     """Normalize a verified email for identity and invitation keys.
 
-    Always strip and lowercase. For gmail.com and googlemail.com only, also
-    remove dots from the local part. Plus-tags are kept as-is.
+    Lowercase and strip surrounding whitespace only. Dots and plus-tags are
+    kept exactly; ``foo.bar@gmail.com`` and ``foobar@gmail.com`` are
+    different keys.
     """
-    local, separator, domain = email.strip().lower().partition("@")
-    if not separator:
-        return email.strip().lower()
-    if domain in _GMAIL_DOMAINS:
-        local = local.replace(".", "")
-    return f"{local}@{domain}"
+    return email.strip().lower()
 
 
 @dataclass
