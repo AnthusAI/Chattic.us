@@ -47,6 +47,10 @@ describe("AuthStack", () => {
           AllowedOAuthFlowsUserPoolClient: true,
           SupportedIdentityProviders: ["Google"],
           CallbackURLs: [callbackUrl],
+          RefreshTokenValidity: 43200,
+          TokenValidityUnits: {
+            RefreshToken: "minutes",
+          },
         });
         template.resourceCountIs("AWS::Cognito::UserPoolClient", 1);
       });
