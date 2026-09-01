@@ -568,7 +568,7 @@ def then_read_bot_by_identifier(
     assert payload["name"] == name
     assert (payload.get("memory") or {}).get(key) == value
     missing = context.api_client.get(
-        org_path(tenant_id, f"/bots/{expected.bot_id}"),
+        org_path("other", f"/bots/{expected.bot_id}"),
     )
     assert missing.status_code == 404
 

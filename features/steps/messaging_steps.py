@@ -6,10 +6,10 @@ from dataclasses import replace
 from uuid import uuid4
 
 from behave import given, then, when
-from sse_helpers import SseWatcher, read_sse_until, org_api_path
+from sse_helpers import SseWatcher, read_sse_until
 
-from chatticus.http.paths import org_path
 from chatticus.http.client import HttpTurnClient
+from chatticus.http.paths import org_path
 from chatticus.models import (
     ActorKind,
     ChannelTenantMismatchError,
@@ -427,7 +427,7 @@ def then_read_household_computer(context: object, tenant_id: str, user_id: str) 
     assert payload["stopped"] is True
     assert payload["host_start_generation"] == 0
     missing = context.api_client.get(
-        org_path(tenant_id, f"/users/{user_id}/computer"),
+        org_path("other", f"/users/{user_id}/computer"),
     )
     assert missing.status_code == 404
 
@@ -473,7 +473,7 @@ def then_read_turn_by_identifier(context: object, tenant_id: str) -> None:
     assert payload["channel_id"] == channel.channel_id
     assert payload["status"] == "active"
     missing = context.api_client.get(
-        org_path(tenant_id, f"/turns/{expected_turn_id}"),
+        org_path("other", f"/turns/{expected_turn_id}"),
     )
     assert missing.status_code == 403
 
@@ -1054,7 +1054,7 @@ def then_user_reads_turn_gate_without_sse(
     del user_id
     channel = _channel(context)
     response = context.api_client.get(
-        org_path(tenant_id, f"/turns/{_turn_id(context)}"),
+        org_path(channel.tenant_id, f"/turns/{_turn_id(context)}"),
     )
     assert response.status_code == 200
     payload = response.json()
@@ -1069,7 +1069,7 @@ def then_user_reads_pending_computer_tool(
     del user_id
     channel = _channel(context)
     response = context.api_client.get(
-        org_path(tenant_id, f"/turns/{_turn_id(context)}"),
+        org_path(channel.tenant_id, f"/turns/{_turn_id(context)}"),
     )
     assert response.status_code == 200
     pending = response.json().get("pending_computer_tool")
@@ -1109,8 +1109,12 @@ def then_action_id_stable_across_get_and_journal(context: object, user_id: str) 
     del user_id
     channel = _channel(context)
     turn_id = _turn_id(context)
-    first = context.api_client.get(org_path(tenant_id, f"/turns/{turn_id}"), headers=headers).json()
-    second = context.api_client.get(org_path(tenant_id, f"/turns/{turn_id}"), headers=headers).json()
+    first = context.api_client.get(
+        org_path(channel.tenant_id, f"/turns/{turn_id}"),
+    ).json()
+    second = context.api_client.get(
+        org_path(channel.tenant_id, f"/turns/{turn_id}"),
+    ).json()
     get_action_id = first["pending_computer_tool"]["action_id"]
     assert get_action_id
     assert second["pending_computer_tool"]["action_id"] == get_action_id

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from behave import then, when
-from sse_helpers import SseWatcher, read_sse_until, org_api_path
+from sse_helpers import SseWatcher
 
 from chatticus.http.paths import org_path
 from chatticus.models import TurnStatus
@@ -118,7 +118,7 @@ def when_worker_completes_turn(context: object) -> None:
         raise AssertionError("No turn is active in this scenario.")
     channel = context.last_channel
     response = context.api_client.post(
-        org_path(tenant_id, f"/turns/{context.last_turn_id}/chunks"),
+        org_path(channel.tenant_id, f"/turns/{context.last_turn_id}/chunks"),
         json={
             "token": "",
             "complete": True,

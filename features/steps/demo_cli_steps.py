@@ -7,6 +7,7 @@ import threading
 from behave import then, when
 from messaging_steps import _channel, _turn_id
 
+from chatticus.http.client import HttpTurnClient
 from chatticus.http.paths import org_path
 from chatticus.models import ActorKind
 from chatticus.thin_turn_conversation import (
