@@ -16,8 +16,10 @@ from chatticus.models import (
     InvitationNotFoundError,
     InvitationNotPendingError,
     InvitationStatus,
+    LastOwnerCannotBeDemotedError,
     MemberRole,
     Membership,
+    MembershipNotFoundError,
     NotOrganizationOwnerError,
     Organization,
     OrganizationNotEnabledError,
@@ -116,8 +118,19 @@ class OrgRecordsKernel:
             )
         membership = self.store.get_membership(tenant_id, member_user_id)
         if membership is None:
-            msg = f"User {member_user_id!r} is not a member of {tenant_id!r}."
-            raise KeyError(msg)
+            raise MembershipNotFoundError(
+                f"User {member_user_id!r} is not a member of {tenant_id!r}."
+            )
+        if membership.role == MemberRole.OWNER and role != MemberRole.OWNER:
+            other_owners = [
+                item
+                for item in self.store.list_memberships(tenant_id)
+                if item.role == MemberRole.OWNER and item.user_id != member_user_id
+            ]
+            if not other_owners:
+                raise LastOwnerCannotBeDemotedError(
+                    f"User {member_user_id!r} is the last owner of {tenant_id!r}."
+                )
         updated = replace(membership, role=role)
         self.store.put_membership(updated)
         return updated

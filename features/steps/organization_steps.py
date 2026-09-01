@@ -10,6 +10,7 @@ from chatticus.control_plane import ControlPlane
 from chatticus.messaging.store import InMemoryMessagingStore
 from chatticus.models import (
     InvitationStatus,
+    LastOwnerCannotBeDemotedError,
     MemberRole,
     NotOrganizationOwnerError,
     OrganizationNotEnabledError,
@@ -152,6 +153,26 @@ def when_owner_sets_role(context: object, name: str, email: str, role: str) -> N
     )
 
 
+@when('the owner of "{name}" tries to set "{email}" role to "{role}"')
+def when_owner_tries_set_role(
+    context: object, name: str, email: str, role: str
+) -> None:
+    org = _org_by_name(context, name)
+    identity = context.identities_by_email.get(email)
+    if identity is None:
+        identity = _plane(context).sign_in(email, now=context.now)
+    context.last_error = None
+    try:
+        _plane(context).set_member_role(
+            org.tenant_id,
+            context.current_identity.user_id,
+            identity.user_id,
+            MemberRole(role),
+        )
+    except LastOwnerCannotBeDemotedError as error:
+        context.last_error = error
+
+
 @when('that user tries to set their role to "{role}" in "{name}"')
 def when_try_set_own_role(context: object, role: str, name: str) -> None:
     org = _org_by_name(context, name)
@@ -261,6 +282,11 @@ def then_accept_refused_not_enabled(context: object) -> None:
 @then("setting the role is refused because the user is not an owner")
 def then_set_role_refused_not_owner(context: object) -> None:
     assert isinstance(context.last_error, NotOrganizationOwnerError)
+
+
+@then("setting the role is refused because this is the last owner")
+def then_set_role_refused_last_owner(context: object) -> None:
+    assert isinstance(context.last_error, LastOwnerCannotBeDemotedError)
 
 
 @then('no computer exists for "{name}"')

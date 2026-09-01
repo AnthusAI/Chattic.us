@@ -86,3 +86,9 @@ Feature: Organization identity and membership records
     And that user accepts the invitation to "Anthus Labs"
     When that user tries to set their role to "owner" in "Anthus Labs"
     Then setting the role is refused because the user is not an owner
+
+  Scenario: The last owner cannot be demoted to member
+    Given "ryan@example.com" has signed in
+    And that user has created and enabled organization "Anthus Labs"
+    When the owner of "Anthus Labs" tries to set "ryan@example.com" role to "member"
+    Then setting the role is refused because this is the last owner
