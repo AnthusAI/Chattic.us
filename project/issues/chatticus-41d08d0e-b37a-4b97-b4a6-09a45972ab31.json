@@ -30,10 +30,22 @@
       "author": "rap@endymion.com",
       "text": "b574a6 is on develop. Planning members CLI (python -m chatticus.members). No admin UI. Worktree /tmp/chatticus-41d08d-members-cli branch cursor/members-cli-4a21.",
       "created_at": "2026-09-01T05:30:49.484212Z"
+    },
+    {
+      "id": "134c342b-9306-4e1c-85c4-ebd7d4cf3666",
+      "author": "rap@endymion.com",
+      "text": "Plan approved with pushback: no org_status dual-write index (filter existing org items so current waitlist rows list without backfill); no decorative --environment flag; ControlPlane only; --yes for non-TTY mutate. Worktree /tmp/chatticus-41d08d-members-cli branch cursor/members-cli-4a21.",
+      "created_at": "2026-09-01T05:37:04.309786Z"
+    },
+    {
+      "id": "bbef36ce-a777-4cd9-9ee6-cc01f6943d9a",
+      "author": "home",
+      "text": "**Heads-up before this surfaces a semantic that is not settled yet.**\n\n`enable_organization` in #130 writes `ENABLED` from any prior state, so it approves a pending organization and reinstates a suspended one through the same call. A review note on b574a6 asks for those to be separated.\n\nFor this CLI: do not expose a single `members enable` that can do both. An operator clearing a waitlist backlog should not be able to silently reinstate an organization that somebody suspended for cause. Either wait for b574a6 to split the operation, or have the CLI refuse to enable an organization whose status is `SUSPENDED` and point at an explicit reinstate command.\n\nEverything else on this card stands, and it is the right thing to be working: 41d08d unblocks 5744ef, which 7b4616 cannot be called done without.",
+      "created_at": "2026-09-01T05:38:18.032314Z"
     }
   ],
   "created_at": "2026-09-01T02:40:05.928935Z",
-  "updated_at": "2026-09-01T05:30:49.484212Z",
+  "updated_at": "2026-09-01T05:38:18.032314Z",
   "closed_at": null,
   "custom": {}
 }
