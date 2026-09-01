@@ -84,9 +84,7 @@ class OrgRecordsKernel:
         """Mark one organization enabled."""
         organization = self.store.get_organization(tenant_id)
         if organization is None:
-            raise OrganizationNotFoundError(
-                f"Organization {tenant_id!r} is unknown."
-            )
+            raise OrganizationNotFoundError(f"Organization {tenant_id!r} is unknown.")
         enabled = replace(organization, status=OrganizationStatus.ENABLED)
         self.store.put_organization(enabled)
         return enabled
@@ -102,9 +100,7 @@ class OrgRecordsKernel:
         """Create a pending invitation from an owner."""
         organization = self.store.get_organization(tenant_id)
         if organization is None:
-            raise OrganizationNotFoundError(
-                f"Organization {tenant_id!r} is unknown."
-            )
+            raise OrganizationNotFoundError(f"Organization {tenant_id!r} is unknown.")
         membership = self.store.get_membership(tenant_id, inviter_user_id)
         if membership is None or membership.role != MemberRole.OWNER:
             raise NotOrganizationOwnerError(
@@ -134,17 +130,13 @@ class OrgRecordsKernel:
         """Accept one invitation when the organization is enabled."""
         invitation = self.store.get_invitation(invitation_id)
         if invitation is None:
-            raise InvitationNotFoundError(
-                f"Invitation {invitation_id!r} is unknown."
-            )
+            raise InvitationNotFoundError(f"Invitation {invitation_id!r} is unknown.")
         if invitation.status != InvitationStatus.PENDING:
             raise InvitationNotPendingError(
                 f"Invitation {invitation_id!r} is not pending."
             )
         if invitation.expires_at <= now:
-            raise InvitationExpiredError(
-                f"Invitation {invitation_id!r} has expired."
-            )
+            raise InvitationExpiredError(f"Invitation {invitation_id!r} has expired.")
         organization = self.store.get_organization(invitation.tenant_id)
         if organization is None:
             raise OrganizationNotFoundError(
@@ -158,9 +150,7 @@ class OrgRecordsKernel:
             raise InvitationEmailMismatchError(
                 f"Invitation {invitation_id!r} does not match {acceptor.email!r}."
             )
-        existing = self.store.get_membership(
-            invitation.tenant_id, acceptor.user_id
-        )
+        existing = self.store.get_membership(invitation.tenant_id, acceptor.user_id)
         if existing is not None:
             raise DuplicateMembershipError(
                 f"User {acceptor.user_id!r} already belongs to "

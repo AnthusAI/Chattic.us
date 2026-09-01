@@ -183,7 +183,9 @@ def then_member(context: object, email: str, name: str) -> None:
 @then('listing organizations for that user includes "{name}"')
 def then_list_includes(context: object, name: str) -> None:
     org = _org_by_name(context, name)
-    orgs = _kernel(context).list_organizations_for_user(context.current_identity.user_id)
+    orgs = _kernel(context).list_organizations_for_user(
+        context.current_identity.user_id
+    )
     tenant_ids = {loaded.tenant_id for loaded in orgs}
     assert org.tenant_id in tenant_ids
 
