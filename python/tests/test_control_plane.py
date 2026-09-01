@@ -91,7 +91,7 @@ def _worker(
 def test_heartbeat_on_unknown_worker_raises() -> None:
     plane = ControlPlane()
     with pytest.raises(KeyError):
-        plane.heartbeat("missing")
+        plane.heartbeat("anthus", "missing")
 
 
 def test_wall_clock_plane_does_not_freeze() -> None:
@@ -185,7 +185,7 @@ def test_worker_cannot_change_tenant_by_re_registering() -> None:
     plane.register_worker(_worker("garage-mac-1", tenant_id="anthus"))
     with pytest.raises(WorkerTenantMismatchError):
         plane.register_worker(_worker("garage-mac-1", tenant_id="other-household"))
-    assert plane.worker("garage-mac-1").registration.tenant_id == "anthus"
+    assert plane.worker("anthus", "garage-mac-1").registration.tenant_id == "anthus"
 
 
 def test_duplicate_bot_name_for_one_user_is_rejected() -> None:
