@@ -93,12 +93,8 @@ def resolve_cognito_config(
     prefix = web_parameter_prefix(environment)
     ssm = boto3.client("ssm", region_name=region)
     pool_id = _ssm_string_parameter(ssm, f"{prefix}/cognito-user-pool-id")
-    resolved_client_id = _ssm_string_parameter(
-        ssm, f"{prefix}/cognito-app-client-id"
-    )
-    resolved_issuer = (
-        f"https://cognito-idp.{region}.amazonaws.com/{pool_id}"
-    )
+    resolved_client_id = _ssm_string_parameter(ssm, f"{prefix}/cognito-app-client-id")
+    resolved_issuer = f"https://cognito-idp.{region}.amazonaws.com/{pool_id}"
     return CognitoConfig(
         issuer=resolved_issuer,
         client_id=resolved_client_id,
@@ -110,7 +106,9 @@ def _ssm_string_parameter(ssm: object, name: str) -> str:
     try:
         response = ssm.get_parameter(Name=name)  # type: ignore[union-attr]
     except Exception as error:
-        raise LookupError(f"SSM parameter {name!r} is missing or unreadable.") from error
+        raise LookupError(
+            f"SSM parameter {name!r} is missing or unreadable."
+        ) from error
     value = response["Parameter"]["Value"].strip()
     if not value:
         raise LookupError(f"SSM parameter {name!r} is empty.")
