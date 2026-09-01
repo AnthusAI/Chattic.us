@@ -267,9 +267,6 @@ class MessagingStore(Protocol):
     def list_workers(self, tenant_id: str) -> list[WorkerRecord]:
         """Return every worker registered for one tenant."""
 
-    def resolve_worker_tenant(self, worker_id: str) -> str | None:
-        """Return the tenant that owns *worker_id*, if any."""
-
 
 class InMemoryMessagingStore:
     """In-memory store for fast kernel tests."""
@@ -677,12 +674,6 @@ class InMemoryMessagingStore:
             ),
             key=lambda record: record.registration.worker_id,
         )
-
-    def resolve_worker_tenant(self, worker_id: str) -> str | None:
-        for tenant_id, stored_worker_id in self._workers:
-            if stored_worker_id == worker_id:
-                return tenant_id
-        return None
 
     def put_invitation(self, invitation: Invitation) -> None:
         self._invitations[invitation.invitation_id] = invitation
@@ -1734,24 +1725,6 @@ class DynamoMessagingStore:
         )
         workers = [_worker_from_item(item) for item in response.get("Items", [])]
         return sorted(workers, key=lambda record: record.registration.worker_id)
-
-    def resolve_worker_tenant(self, worker_id: str) -> str | None:
-        scan_kwargs: dict[str, Any] = {
-            "TableName": self.table_name,
-            "FilterExpression": "sk = :sk",
-            "ExpressionAttributeValues": {
-                ":sk": {"S": f"worker#{worker_id}"},
-            },
-        }
-        while True:
-            response = self.client.scan(**scan_kwargs)
-            for item in response.get("Items", []):
-                return item["tenant_id"]["S"]
-            last_key = response.get("LastEvaluatedKey")
-            if last_key is None:
-                break
-            scan_kwargs["ExclusiveStartKey"] = last_key
-        return None
 
     def put_invitation(self, invitation: Invitation) -> None:
         self.client.put_item(

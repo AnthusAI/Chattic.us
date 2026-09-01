@@ -199,9 +199,6 @@ def _resolve_worker_tenant(context: object, worker_id: str) -> str:
         except KeyError:
             continue
         return tenant_id
-    owner_tenant = context.plane._messaging_store.resolve_worker_tenant(worker_id)
-    if owner_tenant is not None:
-        return owner_tenant
     raise AssertionError(f"No tenant is registered for worker {worker_id!r}.")
 
 

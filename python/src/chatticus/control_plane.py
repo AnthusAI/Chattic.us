@@ -377,23 +377,24 @@ class ControlPlane:
     def register_worker(self, registration: WorkerRegistration) -> str:
         """Register or replace a worker and record a heartbeat.
 
-        A ``worker_id`` is owned by the tenant that first registered it.
-        Re-registering under a different tenant is rejected. Returns a new
-        bearer token on every successful registration.
+        ``worker_id`` is unique within one tenant roster, like bot names.
+        Re-registering under the same tenant rotates the bearer token.
+        Returns a new bearer token on every successful registration.
 
-        :raises WorkerTenantMismatchError: If the worker already belongs to
-            another tenant.
+        :raises WorkerTenantMismatchError: If the stored roster row's tenant
+            does not match the registration payload.
         """
         existing = self._messaging_store.get_worker(
             registration.tenant_id, registration.worker_id
         )
-        owner_tenant = self._messaging_store.resolve_worker_tenant(
-            registration.worker_id
-        )
-        if owner_tenant is not None and owner_tenant != registration.tenant_id:
+        if (
+            existing is not None
+            and existing.registration.tenant_id != registration.tenant_id
+        ):
             raise WorkerTenantMismatchError(
                 f"Worker {registration.worker_id!r} is registered to tenant "
-                f"{owner_tenant!r}, not {registration.tenant_id!r}."
+                f"{existing.registration.tenant_id!r}, not "
+                f"{registration.tenant_id!r}."
             )
         previous = existing
         hydrated = (
