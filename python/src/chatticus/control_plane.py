@@ -340,9 +340,7 @@ class ControlPlane:
         role: MemberRole,
     ) -> Membership:
         """Change one member's role on the admin path."""
-        return self._org_records.admin_set_member_role(
-            tenant_id, member_user_id, role
-        )
+        return self._org_records.admin_set_member_role(tenant_id, member_user_id, role)
 
     def _fault(self, boundary: TurnBoundary, window: CrashWindow) -> None:
         if self._fault_injector is not None:

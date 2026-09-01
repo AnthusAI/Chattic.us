@@ -55,7 +55,9 @@ def test_list_organizations_by_status_dynamo() -> None:
     assert [org.tenant_id for org in pending] == [tenant_id]
 
 
-def test_members_cli_list_and_enable_without_computer(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_members_cli_list_and_enable_without_computer(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     store = InMemoryMessagingStore()
     tenant_id, owner_id = _seed_pending_org(store)
     plane = ControlPlane(messaging_store=store)

@@ -21,7 +21,9 @@ from chatticus.worker.openai_completion import load_local_env
 PlaneFactory = Callable[[], ControlPlane]
 
 
-def main(argv: list[str] | None = None, *, plane_factory: PlaneFactory | None = None) -> int:
+def main(
+    argv: list[str] | None = None, *, plane_factory: PlaneFactory | None = None
+) -> int:
     """Run one members administrator command."""
     parser = argparse.ArgumentParser(
         prog="python -m chatticus.members",
