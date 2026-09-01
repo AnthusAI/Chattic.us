@@ -10,7 +10,7 @@
     "test": "tsx --test lib/**/*.test.ts"
   },
   "dependencies": {
-    "anthus-vultus": "github:AnthusAI/Vultus",
+    "anthus-vultus": "github:AnthusAI/Vultus#codex/vultus-model-zoo",
     "next": "^15.5.2",
     "oidc-client-ts": "^3.5.0",
     "react": "^19.1.1",
