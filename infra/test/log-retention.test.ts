@@ -1,16 +1,22 @@
 import assert from "node:assert/strict";
 import * as cdk from "aws-cdk-lib";
-import * as logs from "aws-cdk-lib/aws-logs";
+import * as acm from "aws-cdk-lib/aws-certificatemanager";
+import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as route53 from "aws-cdk-lib/aws-route53";
+import * as secretsmanager from "aws-cdk-lib/aws-secretsmanager";
 import { Template } from "aws-cdk-lib/assertions";
 import { describe, it } from "node:test";
 import { ComputerStack } from "../lib/computer-stack";
 import {
-  CHATTICUS_LOG_RETENTION,
-  LogGroupRetentionAspect,
-} from "../lib/log-retention";
+  CHATTICUS_CLOUD_ENVIRONMENTS,
+  ChatticusCloudEnvironment,
+  WEB_STACK_IDS,
+} from "../lib/environments";
+import { CHATTICUS_LOG_RETENTION } from "../lib/log-retention";
 import { SnapshotStack } from "../lib/snapshot-stack";
 import { SseSpikeStack } from "../lib/sse-spike-stack";
 import { ThinTurnStack } from "../lib/thin-turn-stack";
+import { WebStack } from "../lib/web-stack";
 
 const RETENTION_DAYS = 30;
 
@@ -44,12 +50,45 @@ function synthSseSpikeStack(): Template {
   return Template.fromStack(stack);
 }
 
-function synthAspectLogGroup(): Template {
+function synthWebStack(environmentName: ChatticusCloudEnvironment): Template {
   const app = new cdk.App();
-  const stack = new cdk.Stack(app, "TestAspect", { env: testEnv });
-  cdk.Aspects.of(stack).add(new LogGroupRetentionAspect(CHATTICUS_LOG_RETENTION));
-  new logs.CfnLogGroup(stack, "DeploymentHandlerLogs", {});
+  const deps = new cdk.Stack(app, "Deps", { env: testEnv });
+  const hostedZone = route53.HostedZone.fromHostedZoneAttributes(deps, "Zone", {
+    hostedZoneId: "Z1234567890ABC",
+    zoneName: "chattic.us",
+  });
+  const siteCertificate = acm.Certificate.fromCertificateArn(
+    deps,
+    "Cert",
+    "arn:aws:acm:us-east-1:123456789012:certificate/00000000-0000-0000-0000-000000000000",
+  );
+  const frontDoor = new lambda.Function(deps, "FrontDoor", {
+    runtime: lambda.Runtime.NODEJS_22_X,
+    handler: "index.handler",
+    code: lambda.Code.fromInline("exports.handler = async () => ({ statusCode: 200 });"),
+  });
+  const frontDoorFunctionUrl = frontDoor.addFunctionUrl({
+    authType: lambda.FunctionUrlAuthType.NONE,
+  });
+  const invokeSecret = new secretsmanager.Secret(deps, "InvokeSecret");
+
+  const stack = new WebStack(app, WEB_STACK_IDS[environmentName], {
+    env: testEnv,
+    chatticusEnvironment: environmentName,
+    hostedZone,
+    siteCertificate,
+    frontDoorFunctionUrl,
+    invokeSecret,
+  });
+
   return Template.fromStack(stack);
+}
+
+function logRetentionResources(template: Template): Record<string, unknown>[] {
+  const resources = template.toJSON().Resources ?? {};
+  return Object.values(resources).filter(
+    (resource) => (resource as { Type?: string }).Type === "Custom::LogRetention",
+  );
 }
 
 describe("CHATTICUS_LOG_RETENTION", () => {
@@ -77,12 +116,32 @@ describe("ThinTurnStack log retention", () => {
   });
 });
 
-describe("WebStack log retention aspect", () => {
-  it("sets RetentionInDays on CfnLogGroup resources (BucketDeployment handlers)", () => {
-    const template = synthAspectLogGroup();
-    template.hasResourceProperties("AWS::Logs::LogGroup", {
+describe("WebStack log retention", () => {
+  it("sets RetentionInDays on every Custom::LogRetention in development", () => {
+    const template = synthWebStack("development");
+    const retentions = logRetentionResources(template);
+    assert.equal(retentions.length, 2);
+    template.allResourcesProperties("Custom::LogRetention", {
       RetentionInDays: RETENTION_DAYS,
     });
+  });
+
+  for (const environmentName of ["staging", "production"] as const) {
+    it(`sets RetentionInDays on BucketDeployment handler in ${environmentName}`, () => {
+      const template = synthWebStack(environmentName);
+      const retentions = logRetentionResources(template);
+      assert.equal(retentions.length, 1);
+      template.allResourcesProperties("Custom::LogRetention", {
+        RetentionInDays: RETENTION_DAYS,
+      });
+    });
+  }
+
+  it("does not emit auto-delete custom resources outside development", () => {
+    for (const environmentName of ["staging", "production"] as const) {
+      const template = synthWebStack(environmentName);
+      template.resourceCountIs("Custom::S3AutoDeleteObjects", 0);
+    }
   });
 });
 
@@ -93,5 +152,22 @@ describe("SseSpikeStack log retention", () => {
     template.hasResourceProperties("Custom::LogRetention", {
       RetentionInDays: RETENTION_DAYS,
     });
+  });
+});
+
+describe("WebStack log retention inversion", () => {
+  it("covers every environment stack", () => {
+    for (const environmentName of CHATTICUS_CLOUD_ENVIRONMENTS) {
+      const template = synthWebStack(environmentName);
+      const retentions = logRetentionResources(template);
+      assert.ok(retentions.length >= 1);
+      for (const resource of retentions) {
+        assert.equal(
+          (resource as { Properties?: { RetentionInDays?: number } }).Properties
+            ?.RetentionInDays,
+          RETENTION_DAYS,
+        );
+      }
+    }
   });
 });

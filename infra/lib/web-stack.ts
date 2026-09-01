@@ -20,7 +20,10 @@ import {
   webParameterPrefix,
   WEB_SITE_DOMAINS,
 } from "./environments";
-import { CHATTICUS_LOG_RETENTION, LogGroupRetentionAspect } from "./log-retention";
+import {
+  CHATTICUS_LOG_RETENTION,
+  CustomResourceProviderLogRetentionAspect,
+} from "./log-retention";
 
 export interface WebStackProps extends cdk.StackProps {
   chatticusEnvironment: ChatticusCloudEnvironment;
@@ -47,7 +50,11 @@ export class WebStack extends cdk.Stack {
     const thinTurnPrefix = thinTurnParameterPrefix(environmentName);
     const retainData = environmentName !== "development";
     cdk.Tags.of(this).add("chatticus:environment", environmentName);
-    cdk.Aspects.of(this).add(new LogGroupRetentionAspect(CHATTICUS_LOG_RETENTION));
+    if (!retainData) {
+      cdk.Aspects.of(this).add(
+        new CustomResourceProviderLogRetentionAspect(CHATTICUS_LOG_RETENTION),
+      );
+    }
 
     const invokeSecret = props.invokeSecret;
     const frontDoorFunctionUrl = props.frontDoorFunctionUrl;
@@ -114,6 +121,7 @@ export class WebStack extends cdk.Stack {
 
     const webRoot = path.join(__dirname, "../../web");
     new s3deploy.BucketDeployment(this, "DeployWebsite", {
+      logRetention: CHATTICUS_LOG_RETENTION,
       sources: [
         s3deploy.Source.asset(webRoot, {
           bundling: {

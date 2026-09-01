@@ -163,10 +163,11 @@ reasons it cannot be the only copy.
   period every run, where a DynamoDB query reads one partition.
 
 All Chatticus CDK log groups use **30-day** retention (`CHATTICUS_LOG_RETENTION`
-in `infra/lib/log-retention.ts`). DynamoDB is the system of record; CloudWatch
-logs are a debug window only, long enough for incident lookback and short enough
-to bound storage cost. Retention is set explicitly on every log group in CDK so
-nothing relies on the never-expire default.
+in `infra/lib/log-retention.ts`), including WebStack BucketDeployment and
+development auto-delete custom-resource handlers. DynamoDB is the system of record;
+CloudWatch logs are a debug window only, long enough for incident lookback and
+short enough to bound storage cost. Retention is set explicitly on every log group
+in CDK so nothing relies on the never-expire default.
 
 ### Record shape
 
