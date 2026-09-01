@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 
 import pytest
-
-from chatticus.cognito_jwt import CognitoJwtVerifier, CognitoTokenError
 from cognito_test_support import make_cognito_test_keys, mint_id_token
+
+from chatticus.cognito_jwt import CognitoTokenError
 
 
 @pytest.fixture

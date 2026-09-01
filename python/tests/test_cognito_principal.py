@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 import pytest
+from cognito_test_support import make_cognito_test_keys, mint_id_token
 from fastapi.testclient import TestClient
 
 from chatticus.cognito_jwt import CognitoTokenError
@@ -23,7 +24,6 @@ from chatticus.models import (
 )
 from chatticus.org_records import ANTHUS_TENANT_ID
 from chatticus.principal import PrincipalKind
-from cognito_test_support import make_cognito_test_keys, mint_id_token
 
 NOW = datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC)
 

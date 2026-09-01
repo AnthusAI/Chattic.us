@@ -5,6 +5,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from behave import given, then, when
+from cognito_test_support import make_cognito_test_keys, mint_id_token
 
 from chatticus.cognito_jwt import CognitoTokenError
 from chatticus.control_plane import ControlPlane
@@ -15,7 +16,6 @@ from chatticus.http.principal import (
 )
 from chatticus.models import IdentityNotFoundError, OrganizationStatus
 from chatticus.principal import PrincipalKind
-from cognito_test_support import make_cognito_test_keys, mint_id_token
 
 NOW = datetime(2026, 8, 31, 12, 0, 0, tzinfo=UTC)
 
