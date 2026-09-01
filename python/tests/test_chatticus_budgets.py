@@ -69,7 +69,7 @@ def test_snapshots_deploy_script_is_one_stack() -> None:
     assert "ChatticusComputers" not in text
     assert "ChatticusThinTurn" not in text
     assert "budgets-deploy-context.sh" in text
-    assert "CHATTICUS_BUDGETS_MONTHLY_LIMIT_USD" in text
+    assert "BUDGETS_CDK_CONTEXT" in text
     assert "CHATTICUS_BUDGETS_NOTIFICATION_EMAIL" in text
 
 
