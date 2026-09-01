@@ -12,15 +12,15 @@ fi
 
 unset AWS_PROFILE || true
 
-if ! aws sts get-caller-identity >/dev/null; then
-  echo "aws login required before ChatticusBudgets deploy." >&2
-  exit 1
-fi
-
 if [ -z "${CHATTICUS_BUDGETS_MONTHLY_LIMIT_USD:-}" ] ||
   [ -z "${CHATTICUS_BUDGETS_NOTIFICATION_EMAIL:-}" ]; then
   echo "CHATTICUS_BUDGETS_MONTHLY_LIMIT_USD and CHATTICUS_BUDGETS_NOTIFICATION_EMAIL are required." >&2
   echo "Set both before deploy. Do not invent defaults." >&2
+  exit 1
+fi
+
+if ! aws sts get-caller-identity >/dev/null; then
+  echo "aws login required before ChatticusBudgets deploy." >&2
   exit 1
 fi
 
