@@ -15,8 +15,8 @@ from pydantic import BaseModel, Field
 
 from chatticus.capability_policy import grant_from_payload
 from chatticus.capability_sinks import CapabilitySinkDenied
-from chatticus.control_plane import ControlPlane
 from chatticus.cognito_jwt import CognitoJwtVerifier, CognitoTokenError
+from chatticus.control_plane import ControlPlane
 from chatticus.http.principal import (
     RequireWorkerPrincipal,
     reject_worker_credential,
