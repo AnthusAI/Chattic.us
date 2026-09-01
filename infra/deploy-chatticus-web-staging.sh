@@ -1,5 +1,5 @@
 #!/bin/sh
-# Deploy staging thin-turn then the unified web stack for staging.chattic.us.
+# Deploy ChatticusWebStaging only (CloudFront enabled flag); does not restack ThinTurn.
 set -eu
 
 cd "$(dirname "$0")"
@@ -16,5 +16,4 @@ if ! aws sts get-caller-identity >/dev/null; then
   exit 1
 fi
 
-npx cdk deploy ChatticusThinTurnStaging --require-approval never
 npx cdk deploy ChatticusWebStaging --require-approval never
