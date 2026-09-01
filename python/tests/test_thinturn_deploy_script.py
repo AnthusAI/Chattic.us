@@ -24,7 +24,8 @@ DEPLOY_SCRIPT_STACKS = {
     ids=[name.removesuffix(".sh") for name in sorted(DEPLOY_SCRIPT_STACKS)],
 )
 def test_deploy_script_deploys_one_stack_exclusively(
-    script_name: str, stack_name: str,
+    script_name: str,
+    stack_name: str,
 ) -> None:
     text = (INFRA / script_name).read_text()
     assert "deploy --all" not in text
@@ -172,7 +173,10 @@ def test_github_deploy_script_is_one_stack() -> None:
         / "deploy-chatticus-github-deploy.sh"
     )
     text = script.read_text()
-    assert "cdk deploy ChatticusGitHubDeploy --exclusively --require-approval never" in text
+    assert (
+        "cdk deploy ChatticusGitHubDeploy --exclusively --require-approval never"
+        in text
+    )
     assert "deploy --all" not in text
     assert "ChatticusSnapshots" not in text
     assert "ChatticusComputers" not in text
