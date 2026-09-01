@@ -220,9 +220,7 @@ def when_seconds_pass_without_heartbeat(
     for tenant_id in _worker_tenant_ids(context):
         for record in context.plane.list_workers(tenant_id):
             if record.registration.worker_id != worker_id:
-                context.plane.heartbeat(
-                    tenant_id, record.registration.worker_id
-                )
+                context.plane.heartbeat(tenant_id, record.registration.worker_id)
 
 
 @when('worker "{worker_id}" sends a heartbeat')
