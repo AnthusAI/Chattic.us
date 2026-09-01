@@ -7,7 +7,11 @@ from datetime import datetime
 import pytest
 
 from chatticus.control_plane import ControlPlane
-from chatticus.http.principal import OrgAccessDeniedError, PrincipalRoutePolicy, verify_org_access
+from chatticus.http.principal import (
+    OrgAccessDeniedError,
+    PrincipalRoutePolicy,
+    verify_org_access,
+)
 from chatticus.models import MemberRole, OrganizationStatus
 from chatticus.principal import Principal, PrincipalKind
 

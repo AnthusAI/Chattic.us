@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Annotated, Final, TYPE_CHECKING
+from typing import TYPE_CHECKING, Annotated, Final
 
 from fastapi import Depends, Request
 

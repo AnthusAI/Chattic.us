@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from behave import given, then, when
+from behave import then, when
 
 from chatticus.http.paths import org_path
 from chatticus.models import ChannelTenantMismatchError
@@ -12,9 +12,7 @@ from chatticus.models import ChannelTenantMismatchError
     'the front door receives POST /orgs/{tenant_id}/channels for user "{user_id}" '
     "with bots:"
 )
-def when_post_org_channels(
-    context: object, tenant_id: str, user_id: str
-) -> None:
+def when_post_org_channels(context: object, tenant_id: str, user_id: str) -> None:
     bot_ids = [
         context.bots_by_name[row.cells[0].strip()].bot_id for row in context.table
     ]
@@ -37,7 +35,7 @@ def then_channel_response_tenant(context: object, tenant_id: str) -> None:
 
 
 @when(
-    'the front door receives GET /orgs/{tenant_id}/users/{user_id}/bots with header '
+    "the front door receives GET /orgs/{tenant_id}/users/{user_id}/bots with header "
     "X-Tenant-Id {header_tenant}"
 )
 def when_get_bots_with_tenant_header(
@@ -57,9 +55,7 @@ def then_front_door_rejects_tenant_header(context: object) -> None:
     assert "X-Tenant-Id" in response.json()["detail"]
 
 
-@when(
-    'tenant "{tenant_id}" posts "{body}" on the channel via org path "{org_tenant}"'
-)
+@when('tenant "{tenant_id}" posts "{body}" on the channel via org path "{org_tenant}"')
 def when_tenant_posts_via_org_path(
     context: object, tenant_id: str, body: str, org_tenant: str
 ) -> None:

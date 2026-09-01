@@ -5,12 +5,12 @@ from __future__ import annotations
 from datetime import timedelta
 
 from behave import given, then, when
-from sse_helpers import SseWatcher, read_sse_until, org_api_path
+from sse_helpers import SseWatcher
 
 from chatticus.control_plane import ControlPlane
 from chatticus.http.app import create_app
-from chatticus.http.paths import org_path
 from chatticus.http.client import HttpTurnClient
+from chatticus.http.paths import org_path
 from chatticus.http.test_server import start_test_server
 from chatticus.models import TurnEventKind, TurnReconcilingError, TurnStatus
 from chatticus.turn_recovery import logical_enqueue_id

@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from behave import then, when
+
 from chatticus.http.paths import org_path
-from sse_helpers import SseWatcher, read_sse_until, org_api_path
 
 
 @when('the web UI requests the task list for tenant "{tenant_id}" user "{user_id}"')

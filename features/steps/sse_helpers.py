@@ -67,9 +67,7 @@ class SseWatcher:
                 headers = _stream_headers(self.after_seq)
                 with self.client.stream(
                     "GET",
-                    org_api_path(
-                        self.tenant_id, f"/turns/{self.turn_id}/stream"
-                    ),
+                    org_api_path(self.tenant_id, f"/turns/{self.turn_id}/stream"),
                     headers=headers,
                 ) as response:
                     self._response = response
