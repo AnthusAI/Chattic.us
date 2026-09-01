@@ -10,8 +10,8 @@ from chatticus.http.principal import (
     principal_route_policy,
     waitlist_safe,
 )
-from chatticus.models import MemberRole
-from chatticus.principal import MembershipStatus, Principal, PrincipalKind
+from chatticus.models import MemberRole, OrganizationStatus
+from chatticus.principal import Principal, PrincipalKind
 
 
 @given('a user principal for tenant "{tenant_id}"')
@@ -20,7 +20,7 @@ def given_user_principal(context: object, tenant_id: str) -> None:
         kind=PrincipalKind.USER,
         tenant_id=tenant_id,
         user_id="user-1",
-        membership_status=MembershipStatus.ENABLED,
+        organization_status=OrganizationStatus.ENABLED,
         role=MemberRole.OWNER,
     )
 

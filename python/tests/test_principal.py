@@ -16,9 +16,8 @@ from chatticus.http.principal import (
     resolve_principal,
     waitlist_safe,
 )
-from chatticus.models import MemberRole
+from chatticus.models import MemberRole, OrganizationStatus
 from chatticus.principal import (
-    MembershipStatus,
     Principal,
     PrincipalKind,
     Role,
@@ -33,17 +32,28 @@ def test_role_is_member_role() -> None:
     assert Role is MemberRole
 
 
-def test_user_principal_carries_membership_fields() -> None:
+def test_user_principal_carries_organization_status_and_role() -> None:
     principal = Principal(
         kind=PrincipalKind.USER,
         tenant_id="tenant-1",
         user_id="user-1",
-        membership_status=MembershipStatus.ENABLED,
+        organization_status=OrganizationStatus.ENABLED,
         role=MemberRole.OWNER,
     )
     assert principal.worker_id is None
-    assert principal.membership_status is MembershipStatus.ENABLED
+    assert principal.organization_status is OrganizationStatus.ENABLED
     assert principal.role is MemberRole.OWNER
+
+
+def test_user_principal_can_carry_pending_organization_status() -> None:
+    principal = Principal(
+        kind=PrincipalKind.USER,
+        tenant_id="tenant-1",
+        user_id="user-1",
+        organization_status=OrganizationStatus.PENDING,
+        role=MemberRole.OWNER,
+    )
+    assert principal.organization_status is OrganizationStatus.PENDING
 
 
 def test_worker_principal_carries_worker_id_only() -> None:
@@ -53,7 +63,7 @@ def test_worker_principal_carries_worker_id_only() -> None:
         worker_id="worker-1",
     )
     assert principal.user_id is None
-    assert principal.membership_status is None
+    assert principal.organization_status is None
     assert principal.role is None
 
 
