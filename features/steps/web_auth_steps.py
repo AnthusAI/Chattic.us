@@ -15,7 +15,8 @@ HARNESS_STATE = REPO_ROOT / ".auth-harness-state.json"
 
 
 def _run_harness(command: str, payload: dict | None = None) -> dict:
-    args = ["npx", "tsx", str(HARNESS), command]
+    tsx = WEB_DIR / "node_modules" / ".bin" / "tsx"
+    args = [str(tsx), str(HARNESS), command]
     if payload is not None:
         args.append(json.dumps(payload))
     env = {
