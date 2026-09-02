@@ -254,7 +254,8 @@ def when_stranger_checked_for_access(context: object, name: str) -> None:
 
 
 @when(
-    'a worker principal for tenant "{worker_tenant}" is checked for access to tenant "{path_tenant}"'
+    'a worker principal for tenant "{worker_tenant}" is checked for access '
+    'to tenant "{path_tenant}"'
 )
 def when_worker_checked_for_access(
     context: object, worker_tenant: str, path_tenant: str

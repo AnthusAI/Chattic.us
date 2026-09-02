@@ -11,7 +11,7 @@ _SCRIPTS_DIR = Path(__file__).resolve().parents[1] / "scripts"
 if str(_SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(_SCRIPTS_DIR))
 
-from spec_coverage import (
+from spec_coverage import (  # noqa: E402
     corpus_mentions_route,
     flexible_static_segments_pattern,
     normalize_path_suffix,
