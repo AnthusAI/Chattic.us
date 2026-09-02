@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from moto import mock_aws
 
 from chatticus.control_plane import ControlPlane
-from chatticus.http.app import INVOKE_HEADER, create_app
+from chatticus.http.app import create_app
 from chatticus.http.paths import org_path
 from chatticus.http.principal import (
     PrincipalAudience,
