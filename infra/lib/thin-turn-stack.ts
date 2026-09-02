@@ -199,7 +199,7 @@ export class ThinTurnStack extends cdk.Stack {
         AWS_LWA_PORT: "8080",
         AWS_LWA_READINESS_CHECK_PATH: "/health",
         CHATTICUS_INVOKE_KEY: invokeSecret.secretValue.unsafeUnwrap(),
-        ...(environmentName === "development"
+        ...(environmentName !== "production"
           ? { CHATTICUS_INTEGRATION_TEST_ENABLED: "1" }
           : {}),
       },
@@ -260,7 +260,7 @@ export class ThinTurnStack extends cdk.Stack {
           `arn:aws:ssm:${this.region}:${this.account}:parameter${openAiParameterName}`,
           `arn:aws:ssm:${this.region}:${this.account}:parameter${webPrefix}/cognito-user-pool-id`,
           `arn:aws:ssm:${this.region}:${this.account}:parameter${webPrefix}/cognito-app-client-id`,
-          ...(environmentName === "development"
+          ...(environmentName !== "production"
             ? [
                 `arn:aws:ssm:${this.region}:${this.account}:parameter${integrationPrefix}/*`,
               ]

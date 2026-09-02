@@ -27,6 +27,7 @@ export interface IntegrationTestStackProps extends cdk.StackProps {
  *
  * Does not run Fargate computer hosts. Deploy with:
  * ``cdk deploy ChatticusIntegrationTest -c integrationTestEnvironment=development``
+ * or ``... integrationTestEnvironment=staging``. Production is not supported.
  */
 export class IntegrationTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: IntegrationTestStackProps) {
