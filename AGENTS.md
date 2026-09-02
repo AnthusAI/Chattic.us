@@ -12,7 +12,7 @@ Warning: Editing project/ directly violates The Way. Do not read or write anythi
 
 ## What this project is
 
-Chatticus is a named-teammate product: persistent bots, a user-scoped Linux
+Chatticus is a named-teammate product: persistent bots, an organization-scoped Linux
 computer, approvals, skills, routines, and a pull-based worker protocol that
 can run the computer on AWS or on local hardware.
 
