@@ -182,7 +182,7 @@ both before arguing for a change. Two that are misread most often:
   agent may call `start_computer` early, and a caller may declare
   `computer` at enqueue, but correctness must never depend on either:
   touching a computer tool escalates on its own. There is no
-  `stop_computer` -- the computer is shared by all of a user's bots.
+  `stop_computer` -- the computer is shared by the whole organization.
 
 See `docs/MESSAGING.md` for the design and `docs/DESIGN_CHALLENGES.md`
 for the reasoning. Do not add a CDK control-plane stack until the
