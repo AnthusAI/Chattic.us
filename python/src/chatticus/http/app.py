@@ -39,7 +39,10 @@ from chatticus.models import (
     ComputerNotReadyError,
     CostClass,
     NotOrganizationOwnerError,
+    OrganizationCreationRateLimitedError,
+    OrganizationNameTooLongError,
     OrganizationNotFoundError,
+    OrganizationOwnerCapError,
     StaleAttemptError,
     TaskAccessDeniedError,
     TaskNotFoundError,
@@ -1074,6 +1077,12 @@ def _status_for_error(error: ChatticusError) -> int:
         return 404
     if isinstance(error, OrganizationNotFoundError):
         return 404
+    if isinstance(error, OrganizationOwnerCapError):
+        return 409
+    if isinstance(error, OrganizationCreationRateLimitedError):
+        return 429
+    if isinstance(error, OrganizationNameTooLongError):
+        return 400
     if isinstance(error, NotOrganizationOwnerError):
         return 403
     return 400
