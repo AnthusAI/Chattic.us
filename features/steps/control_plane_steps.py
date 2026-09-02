@@ -5,7 +5,7 @@ from __future__ import annotations
 from datetime import timedelta
 
 from behave import given, then, when
-from browser_auth_helpers import ensure_org_membership, wire_test_http_front_door
+from browser_auth_helpers import wire_test_http_front_door
 
 from chatticus.control_plane import ControlPlane
 from chatticus.http.paths import org_path
@@ -279,9 +279,43 @@ def then_not_assigned(context: object) -> None:
 
 @given('tenant "{tenant_id}" user "{user_id}" has a bot named "{name}"')
 def given_bot(context: object, tenant_id: str, user_id: str, name: str) -> None:
+    from http_test_support import NOW, _seed_org_for_user
+
+    from chatticus.models import (
+        Identity,
+        MemberRole,
+        Membership,
+        OrganizationNotFoundError,
+    )
+    from chatticus.org_records import normalize_email
+
+    try:
+        context.plane.get_organization(tenant_id)
+    except OrganizationNotFoundError:
+        _seed_org_for_user(
+            context.plane,
+            tenant_id,
+            user_id,
+            owner_email=f"{user_id}@{tenant_id}.test",
+        )
+    else:
+        if context.plane.get_membership(tenant_id, user_id) is None:
+            email = normalize_email(f"{user_id}@{tenant_id}.test")
+            identity = context.plane._org_records.store.get_identity_by_email(email)
+            if identity is None:
+                identity = Identity(user_id=user_id, email=email, created_at=NOW)
+                context.plane._org_records.store.put_identity(identity)
+            context.plane._messaging_store.put_membership(
+                Membership(
+                    tenant_id=tenant_id,
+                    user_id=user_id,
+                    role=MemberRole.OWNER,
+                    joined_at=NOW,
+                )
+            )
     bot = context.plane.create_bot(tenant_id, name, creator_user_id=user_id)
     context.bots_by_name[name] = bot
-    ensure_org_membership(context, tenant_id)
+    context.last_acting_user_id = user_id
 
 
 @when('bot "{name}" writes "{path}" containing "{content}" on the computer')

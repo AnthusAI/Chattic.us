@@ -574,8 +574,18 @@ def _structured_send_grant() -> TaskCapabilityGrant:
 def given_turn_carries_grant(context: object, turn_id: str) -> None:
     grant = _policy(context).grant
     assert grant is not None
+    tenant_id = _policy_tenant(context)
     context.policy_turn_id = turn_id
-    context.plane.set_turn_capability_grant(_policy_tenant(context), turn_id, grant)
+    context.plane.set_turn_capability_grant(tenant_id, turn_id, grant)
+    bot = next(iter(getattr(context, "bots_by_name", {}).values()), None)
+    acting_user_id = getattr(context, "last_acting_user_id", None)
+    if bot is not None and acting_user_id is not None:
+        context.plane.ensure_sink_turn(
+            tenant_id,
+            turn_id,
+            acting_user_id=acting_user_id,
+            bot_id=bot.bot_id,
+        )
 
 
 @given('the household computer workspace file "{path}" contains "{content}"')
