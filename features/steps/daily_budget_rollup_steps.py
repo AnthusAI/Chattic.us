@@ -81,6 +81,14 @@ def given_ce_no_data(context: object, day: str) -> None:
     )
 
 
+@given("Cost Explorer returns zero attributed AWS spend on {day}")
+def given_ce_zero_attributed(context: object, day: str) -> None:
+    context.cost_explorer.mark_day_available(
+        context.budget_environment,
+        date.fromisoformat(day),
+    )
+
+
 @given('vendor spend for tenant "{tenant_id}" on {day} totals {amount} USD')
 @when('vendor spend for tenant "{tenant_id}" on {day} totals {amount} USD')
 def given_vendor_spend_total(
@@ -150,6 +158,26 @@ def when_aws_budget_alert(context: object, budget_name: str, day: str) -> None:
         "budgetThreshold": "80",
         "notificationType": "ACTUAL",
     }
+    _record_aws_budget_alert(context, day, payload)
+
+
+@when('a PascalCase AWS Budgets alert arrives for budget "{budget_name}" on {day}')
+def when_pascal_case_aws_budget_alert(
+    context: object, budget_name: str, day: str
+) -> None:
+    payload = {
+        "BudgetName": budget_name,
+        "BudgetType": "COST",
+        "BudgetThreshold": "80",
+        "NotificationType": "ACTUAL",
+        "AccountId": "111111111111",
+    }
+    _record_aws_budget_alert(context, day, payload)
+
+
+def _record_aws_budget_alert(
+    context: object, day: str, payload: dict[str, object]
+) -> None:
     record_budget_alert_from_sns(
         store=context.messaging_store,
         environment=context.budget_environment,

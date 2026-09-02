@@ -47,6 +47,10 @@ Feature: Daily budget rollup
     When a rollup threshold alert message arrives on the budgets topic
     Then the account budget rollup for 2026-08-31 still has 1 aws_budget_alert
 
+  Scenario: PascalCase AWS Budgets payload is recorded
+    When a PascalCase AWS Budgets alert arrives for budget "chatticus-monthly-aws" on 2026-08-31
+    Then the account budget rollup for 2026-08-31 records an aws_budget_alert
+
   Scenario: Cost Explorer lag leaves AWS pending without treating it as zero
     Given Cost Explorer has no data for 2026-08-31
     And vendor spend for tenant "anthus" on 2026-08-31 totals 0.00004 USD
@@ -55,6 +59,12 @@ Feature: Daily budget rollup
     And the budget rollup for tenant "anthus" environment "development" on 2026-08-31 has ce_status "pending"
     And the budget rollup for tenant "anthus" environment "development" on 2026-08-31 has null combined_report_usd
     And no budget threshold alert was published
+
+  Scenario: Cost Explorer quiet day is zero attributed not pending
+    Given Cost Explorer returns zero attributed AWS spend on 2026-08-31
+    When the daily budget rollup runs for 2026-08-31
+    Then the budget rollup for tenant "anthus" environment "development" on 2026-08-31 has aws_cost_usd 0.00
+    And the budget rollup for tenant "anthus" environment "development" on 2026-08-31 has ce_status "ok"
 
   Scenario: AWS-billed ledger rows do not double-count vendor dollars
     Given Cost Explorer reports 3.00 USD for tenant "anthus" on 2026-08-31

@@ -53,8 +53,8 @@ def record_budget_alert_from_sns(
         return False
     if payload.get("source") == ROLLUP_ALERT_SOURCE:
         return False
-    budget_name = payload.get("budgetName")
-    if not isinstance(budget_name, str) or not budget_name:
+    budget_name = _budget_name_from_payload(payload)
+    if budget_name is None:
         return False
     detail = json.dumps(payload, sort_keys=True)
     existing = store.get_account_budget_rollup_row(environment, rollup_date)
@@ -86,6 +86,14 @@ def record_budget_alert_from_sns(
         rollup_date.isoformat(),
     )
     return True
+
+
+def _budget_name_from_payload(payload: dict[str, object]) -> str | None:
+    for key in ("BudgetName", "budgetName"):
+        value = payload.get(key)
+        if isinstance(value, str) and value:
+            return value
+    return None
 
 
 def _parse_sns_payload(message: str) -> dict[str, object] | None:

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, timedelta
 from decimal import Decimal
 from typing import Protocol
 
@@ -50,6 +50,10 @@ class FakeCostExplorerReader:
         self._pending_days.discard((environment, rollup_date))
         self._costs[(environment, tenant_id, rollup_date)] = amount
 
+    def mark_day_available(self, environment: str, rollup_date: date) -> None:
+        """Mark one day as loaded in Cost Explorer with zero attributed spend."""
+        self._pending_days.discard((environment, rollup_date))
+
     def daily_costs_by_tenant(
         self,
         *,
@@ -79,7 +83,7 @@ class Boto3CostExplorerReader:
         rollup_date: date,
     ) -> CostExplorerDayResult:
         start = rollup_date.isoformat()
-        end = rollup_date.isoformat()
+        end = (rollup_date + timedelta(days=1)).isoformat()
         response = self.client.get_cost_and_usage(
             TimePeriod={"Start": start, "End": end},
             Granularity="DAILY",
@@ -99,7 +103,7 @@ class Boto3CostExplorerReader:
             return CostExplorerDayResult(pending=True, costs_by_tenant={})
         groups = results[0].get("Groups") or []
         if not groups:
-            return CostExplorerDayResult(pending=True, costs_by_tenant={})
+            return CostExplorerDayResult(pending=False, costs_by_tenant={})
         costs: dict[str, Decimal] = {}
         for group in groups:
             keys = group.get("Keys") or []
