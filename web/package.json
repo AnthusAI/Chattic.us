@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "predev": "python3 -m chatticus.wiki_publish",
+    "prebuild": "python3 -m chatticus.wiki_publish",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",

@@ -3,7 +3,6 @@ title: Agent workplace
 description: A named place where agents collaborate and do useful work — not a chat tab, not a model catalog, and not a one-off coding session.
 ogHeadline: Agent workplace
 ogTagline: A durable place where named agents do useful work
-draft: true
 ---
 
 An **agent workplace** is a durable computer plus the people and bots that share it. The point is useful work over time: files that persist, a screen someone can watch, and teammates who remember the organization — not a transcript that vanishes when the tab closes.
